@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #box{ width:100px; height: 150px; background: goldenrod; position:fixed;left:100px; top:300px; border-radius:20px; box-shadow: inset 10px 5px 5px darkgoldenrod ;}
+        #box:before{ content:'';display:block; width:50px; height: 60px; border-radius: 15px; background: seagreen; position:absolute; left:50%; top:50%; margin: -30px 0 0 -25px;}
+        #box:after{content:'';display:block; width:10px; height: 80px;  background: darkolivegreen; position:absolute;left:50%; margin-left: -5px; top:-35px}
+        .bullet{width: 5px;height: 15px;border-top-right-radius: 50%;border-top-left-radius: 50%;
+            background: goldenrod;position: absolute}
+        .dot{width: 5px;height: 5px;position: absolute}
+        .foe{width: 100px;height: 100px;background: #000;position: absolute}
+    </style>
+    <script>
+        window.onload=function(){
+            var oBox=document.getElementById('box');
+            var foe=null;
+            var up=down=left=right=false;
+
+            setInterval(function(){
+                if(up){
+                    oBox.style.top=oBox.offsetTop-10+'px';
+                }
+                if(down){
+                    oBox.style.top=oBox.offsetTop+10+'px';
+                }
+                if(left){
+                    oBox.style.left=oBox.offsetLeft-10+'px';
+                }
+                if(right){
+                    oBox.style.left=oBox.offsetLeft+10+'px';
+                }
+            },30)
+            document.onkeydown=function (ev) {
+                var ev=ev||event;
+                switch (ev.keyCode) {
+                    case 65:
+                        left = true;
+                        right=down=up=false;
+                        break;
+                    case 87:
+                        up = true;
+                        right=down=left=false;
+                        break;
+                    case 68:
+                        right = true;
+                        left=down=up=false;
+                        break;
+                    case 83:
+                        down = true;
+                        right=left=up=false;
+                        break;
+                }
+            };
+
+            document.onkeyup=function (ev) {
+                var ev=ev||event;
+                switch (ev.keyCode){
+                    case 65:
+                        left=false;
+                        break;
+                    case 87:
+                        up=false;
+                        break;
+                    case 68:
+                        right=false;
+                        break;
+                    case 83:
+                        down=false;
+                        break;
+                    case 32:
+                        var bullet=null;
+                        bullet=document.createElement('div');
+                        bullet.className='bullet';
+                        bullet.style.left=oBox.offsetLeft+oBox.offsetWidth/2-bullet.offsetWidth/2+'px';
+                        bullet.style.top=oBox.offsetTop+'px';
+                        document.body.appendChild(bullet);
+                        var timer=setInterval(function(){
+                            bullet.style.top=bullet.offsetTop-20+'px';
+                            if(bullet.offsetTop<=0){
+                                clearInterval(timer);
+                                var oDot=null;
+                                for(var i=0;i<20;i++){
+                                    oDot=document.createElement('div');
+                                    oDot.className='dot';
+                                    oDot.style.left=bullet.offsetLeft+'px';
+                                    oDot.style.top=bullet.offsetTop+'px';
+                                    oDot.style.background='#'+Math.floor(Math.random()*15777215+100000).toString(16)
+                                    document.body.appendChild(oDot);
+                                    dotMove(oDot)
+                                }
+                                document.body.removeChild(bullet)
+                            }else if(bullet.offsetTop<=foe.offsetTop+foe.offsetHeight && (bullet.offsetLeft>=foe.offsetLeft && bullet.offsetLeft<=foe.offsetLeft+foe.offsetWidth)) {
+                                clearInterval(timer);
+                                var oDot = null;
+                                for (var i = 0; i < 20; i++) {
+                                    oDot = document.createElement('div');
+                                    oDot.className = 'dot';
+                                    oDot.style.backgroundColor = '#' + (Math.floor(Math.random() * 15000000) + 1777215).toString(16);
+                                    oDot.style.top = bullet.offsetTop + 'px';
+                                    oDot.style.left = bullet.offsetLeft + 'px';
+                                    document.body.appendChild(oDot);
+
+                                    dotMove(oDot);
+                                }
+                                var score=0;
+                                score+=1;
+                                document.body.removeChild(foe);
+                                document.body.removeChild(bullet);
+                                document.title='您当前得分：'+score;
+                            }
+                        },30)
+                }
+            };
+            function dotMove(obj){
+                var speedX=Math.floor(Math.random()*30)-15;
+                var speedY=Math.floor(Math.random()*30)-15;
+                var timer=setInterval(function(){
+                    speedY++;
+                    obj.style.top=obj.offsetTop+speedY+'px';
+                    obj.style.left=obj.offsetLeft+speedX+'px';
+                    if(obj.offsetTop>=document.documentElement.clientHeight){
+                        document.body.removeChild(obj);
+                        clearInterval(timer);
+                    }
+                },30)
+            }
+            // foe=document.createElement('div');
+            // foe.className='foe';
+            // foe.style.top=Math.floor(Math.random()*document.documentElement.clientHeight/4)+'px';
+            // foe.style.left=Math.floor(Math.random()*document.documentElement.clientWidth-foe.offsetWidth)+'px';
+            // document.body.appendChild(foe);
+            timer1=setInterval(function(){
+                foe=document.createElement('div');
+                foe.className='foe';
+                foe.style.left=Math.floor(Math.random()*(document.documentElement.clientWidth-100))+'px';
+                foe.style.top=Math.floor(Math.random()*400)+'px';
+                document.body.appendChild(foe);
+                setTimeout(function(){
+                    document.body.removeChild(foe);
+                },3000)
+            },5000)
+        }
+    </script>
+</head>
+<body>
+    <div id="box">
+    </div>
+</body>
+</html>
